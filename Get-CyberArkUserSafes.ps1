@@ -1,14 +1,14 @@
 <#
 .SYNOPSIS
-    Lists every Safe (name + description) that a given Idira PAM end user is a
+    Lists every Safe (name + description) that a given CyberArk PAM end user is a
     member of, either directly or through Vault / Active Directory group membership.
 
 .DESCRIPTION
-    Works with self-hosted Idira PAM (formerly CyberArk PAM; PVWA REST API, v14.6 and later).
+    Works with self-hosted CyberArk PAM (PVWA REST API, v14.6 and later).
 
-      1. Logs on to the PVWA REST API (Idira Vault, LDAP or RADIUS authentication)
+      1. Logs on to the PVWA REST API (CyberArk, LDAP or RADIUS authentication)
       2. Works out which groups the target user belongs to:
-           - Vault:  Idira Vault group membership from the Users API (groupsMembership)
+           - Vault:  CyberArk group membership from the Users API (groupsMembership)
            - AD:     nested AD security group membership (tokenGroups) queried directly
                      from Active Directory. No RSAT / ActiveDirectory module needed.
       3. Gets all Safes, then the members of each Safe
@@ -31,9 +31,7 @@
     The end user to report on, e.g. jdoe, jdoe@company.com or COMPANY\jdoe.
 
 .PARAMETER AuthType
-    The authentication method of the account running the script: Idira (Vault-native users), LDAP or RADIUS.
-    'Idira' calls the /auth/CyberArk/Logon endpoint, because the REST API path
-    still uses the old product name.
+    The authentication method of the account running the script: CyberArk, LDAP or RADIUS.
 
 .PARAMETER GroupSource
     Where the target user's group membership comes from: Vault, AD or Both (the default).
@@ -43,17 +41,17 @@
     Defaults to the domain of the machine running the script.
 
 .EXAMPLE
-    .\Get-IdiraUserSafes.ps1 -PVWAUrl https://pvwa.company.com -TargetUser jdoe -AuthType LDAP
+    .\Get-CyberArkUserSafes.ps1 -PVWAUrl https://pvwa.company.com -TargetUser jdoe -AuthType LDAP
 
 .EXAMPLE
-    .\Get-IdiraUserSafes.ps1 -PVWAUrl https://pvwa.company.com -TargetUser jdoe `
-        -AuthType Idira -ExportCsv C:\Temp\jdoe_safes.csv -SkipCertificateCheck
+    .\Get-CyberArkUserSafes.ps1 -PVWAUrl https://pvwa.company.com -TargetUser jdoe `
+        -AuthType CyberArk -ExportCsv C:\Temp\jdoe_safes.csv -SkipCertificateCheck
 #>
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)][string]$PVWAUrl,
     [Parameter(Mandatory = $true)][string]$TargetUser,
-    [ValidateSet('Idira', 'LDAP', 'RADIUS')][string]$AuthType = 'Idira',
+    [ValidateSet('CyberArk', 'LDAP', 'RADIUS')][string]$AuthType = 'CyberArk',
     [System.Management.Automation.PSCredential]$Credential,
     [ValidateSet('Vault', 'AD', 'Both')][string]$GroupSource = 'Both',
     [string]$ADDomain,
@@ -115,7 +113,7 @@ function Get-BaseName([string]$Name) {
     return $Name
 }
 
-# Gets all pages from a paged Idira PVWA list endpoint (one that returns value / count)
+# Gets all pages from a paged CyberArk list endpoint (one that returns value / count)
 function Get-PASPaged {
     param([Parameter(Mandatory = $true)][string]$Uri)
     $all = New-Object System.Collections.Generic.List[object]
@@ -166,7 +164,7 @@ function Get-ADGroupNames {
 
 try {
     #region ---------- 1. Logon ----------
-    if (-not $Credential) { $Credential = Get-Credential -Message "Idira PAM $AuthType logon" }
+    if (-not $Credential) { $Credential = Get-Credential -Message "CyberArk $AuthType logon" }
 
     Write-Host "Logging on to $PVWAUrl ($AuthType)..." -ForegroundColor Cyan
     $logonBody = @{
@@ -174,9 +172,7 @@ try {
         password          = $Credential.GetNetworkCredential().Password
         concurrentSession = $true
     }
-    # The REST API path still uses the old name for Vault-native authentication
-    $authPath = if ($AuthType -eq 'Idira') { 'CyberArk' } else { $AuthType }
-    $token = Invoke-PAS -Uri "$BaseUri/auth/$authPath/Logon" -Method POST -Body $logonBody
+    $token = Invoke-PAS -Uri "$BaseUri/auth/$AuthType/Logon" -Method POST -Body $logonBody
     $logonBody.password = $null
     if (-not $token) { throw 'Logon returned no session token.' }
     $script:Headers = @{ Authorization = $token }

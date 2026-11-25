@@ -1,8 +1,8 @@
-# Idira Safe Membership Report
+# CyberArk Safe Membership Report
 
-This PowerShell script lists every **Safe**, with its name and description, that an Idira PAM end user can access, either **directly** or through **Vault or Active Directory group membership**. It uses the PVWA REST API.
+This PowerShell script lists every **Safe**, with its name and description, that a CyberArk PAM end user can access, either **directly** or through **Vault or Active Directory group membership**. It uses the PVWA REST API.
 
-It works with self-hosted Idira PAM (formerly CyberArk PAM), v14.6 and later, on Windows PowerShell 5.1 and PowerShell 7+.
+It works with self-hosted CyberArk PAM, v14.6 and later, on Windows PowerShell 5.1 and PowerShell 7+.
 
 ## What it does
 
@@ -18,18 +18,18 @@ It works with self-hosted Idira PAM (formerly CyberArk PAM), v14.6 and later, on
 
 ```powershell
 # Log on as an LDAP user and report on jdoe
-.\Get-IdiraUserSafes.ps1 -PVWAUrl https://pvwa.company.com -TargetUser jdoe -AuthType LDAP
+.\Get-CyberArkUserSafes.ps1 -PVWAUrl https://pvwa.company.com -TargetUser jdoe -AuthType LDAP
 
 # Log on as a Vault-native user and export the results to CSV
-.\Get-IdiraUserSafes.ps1 -PVWAUrl https://pvwa.company.com -TargetUser jdoe `
-    -AuthType Idira -ExportCsv C:\Temp\jdoe_safes.csv
+.\Get-CyberArkUserSafes.ps1 -PVWAUrl https://pvwa.company.com -TargetUser jdoe `
+    -AuthType CyberArk -ExportCsv C:\Temp\jdoe_safes.csv
 ```
 
 | Parameter | Description |
 |---|---|
 | `-PVWAUrl` | Base PVWA URL, without `/PasswordVault` |
 | `-TargetUser` | The end user to report on: `jdoe`, `jdoe@company.com` or `COMPANY\jdoe` |
-| `-AuthType` | `Idira` (Vault-native users), `LDAP` or `RADIUS`. `Idira` calls `/auth/CyberArk/Logon`, because the API path keeps the old name |
+| `-AuthType` | `CyberArk` (Vault-native users), `LDAP` or `RADIUS` |
 | `-Credential` | Optional `PSCredential`. If you leave it out, the script asks for one |
 | `-GroupSource` | Where group membership comes from: `Vault`, `AD` or `Both` (the default) |
 | `-ADDomain` | Optional AD domain or domain controller to query |
