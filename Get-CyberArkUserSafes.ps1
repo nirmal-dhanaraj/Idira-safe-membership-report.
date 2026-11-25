@@ -46,6 +46,15 @@
 .EXAMPLE
     .\Get-CyberArkUserSafes.ps1 -PVWAUrl https://pvwa.company.com -TargetUser jdoe `
         -AuthType CyberArk -ExportCsv C:\Temp\jdoe_safes.csv -SkipCertificateCheck
+
+.NOTES
+    +-------------+-----------------------------------+
+    | Author      | Nirmal Dhanaraj                   |
+    | Email       | ndhanaraj@paloaltonetworks.com    |
+    | Version     | 1.0                               |
+    | Created     | 25-Nov-2026                       |
+    | Tested with | Self-hosted CyberArk PAM v14.6+   |
+    +-------------+-----------------------------------+
 #>
 [CmdletBinding()]
 param(

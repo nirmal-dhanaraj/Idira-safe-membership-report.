@@ -50,3 +50,13 @@ The output has one row per Safe with these columns: `SafeName`, `Description`, `
 - **Run time:** the script makes one API call per Safe. With about 5,000 Safes, one run takes roughly 8–25 minutes. To report on many users, use a bulk design that downloads all Safe members once and reuses them, instead of running this script once per user.
 - **Matching AD groups:** groups are matched by their short name (sAMAccountName). If your LDAP directory mapping names groups differently (for example by CN), check that the names line up.
 - **LDAP users who have never logged on** aren't in the Vault yet. The Vault group lookup warns and finds nothing for them, but the AD lookup still works.
+
+## Author
+
+| | |
+|---|---|
+| **Author** | Nirmal Dhanaraj |
+| **Email** | [ndhanaraj@paloaltonetworks.com](mailto:ndhanaraj@paloaltonetworks.com) |
+| **Version** | 1.0 |
+| **Created** | 25 November 2026 |
+| **Tested with** | Self-hosted CyberArk PAM v14.6+ |
